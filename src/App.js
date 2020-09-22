@@ -11,17 +11,17 @@ function App() {
         {
             id: 1,
             text: "Tạo git",
-            uncompleted: true,
+            completed: true,
             status: false,
         }, {
             id: 2,
             text: "Upload source lên git",
-            uncompleted: true,
+            completed: true,
             status: false,
         }, {
             id: 3,
             text: "Tạo danh sách",
-            uncompleted: false,
+            completed: false,
             status: false,
         }
     ]);
