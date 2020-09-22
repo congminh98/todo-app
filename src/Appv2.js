@@ -1,96 +1,125 @@
-import React, { useState, useEffect } from 'react';
-import './App.css';
-import Form from './components/Formv2';
-import TodoList from './components/TodoListv2';
+import React, { useState } from 'react';
+import TodoList from './Todolist';
+import './assets/style.css';
 
-
-function App() {
-    //state stuff
-    const [inputText, setInputText] = useState('');
-    const [todos, setTodos] = useState([
-        {
-            id: 1,
-            text: "Tạo git",
-            uncompleted: true,
-            status: false,
-        }, {
-            id: 2,
-            text: "Upload source lên git",
-            uncompleted: true,
-            status: false,
-        }, {
-            id: 3,
-            text: "Tạo danh sách",
-            uncompleted: false,
-            status: false,
+class App extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            inputText: "",
+            listTodo: [
+                {
+                    id: 1,
+                    text: 'Tạo git',
+                    completed: false,
+                    isEdit: false,
+                }, {
+                    id: 2,
+                    text: "Upload source lên git",
+                    completed: true,
+                    isEdit: false,
+                }, {
+                    id: 3,
+                    text: "Tạo danh sách",
+                    completed: false,
+                    isEdit: false,
+                }
+            ]
         }
-    ]);
-    const [status, setStatus] = useState('all');
-    const [filteredTodos, setFilteredTodos] = useState([]);
-    //Functions
-    const filteredHandler = () => {
-        switch (status) {
-            case 'completed':
-                setFilteredTodos(todos.filter(todo => todo.completed === true))
-                break;
-            case 'uncompleted':
-                setFilteredTodos(todos.filter(todo => todo.completed === false))
-                break;
-            default:
-                setFilteredTodos(todos);
-                break;
-        }
-    };
-
-    //use effedt
-    useEffect(() => {
-        getLocalTodos();
-    }, []);
-
-    useEffect(() => {
-        filteredHandler();
-    }, [todos, status]);
-    //save local
-    // eslint-disable-next-line no-unused-vars
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const saveLocalTodos = (e) => {
-        localStorage.setItem("todos", JSON.stringify(todos));
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const getLocalTodos = () => {
-        if (localStorage.getItem("todos") === null) {
-            localStorage.setItem("todos", JSON.stringify([]));
+        this.inputChange = this.inputChange.bind(this);
+        this.handlerSubmit = this.handlerSubmit.bind(this);
+        this.completeTodo = this.completeTodo.bind(this);
+        this.deleteHandler = this.deleteHandler.bind(this);
+        this.editHandler = this.editHandler.bind(this);
+        this.editInputHandler = this.editInputHandler.bind(this);
+        this.cancelEditHandler = this.cancelEditHandler.bind(this);
+    }
+    handlerSubmit(e) {
+        e.preventDefault();
+        const { inputText } = this.state;
+        const { listTodo } = this.state;
+        if (inputText !== "") {
+            listTodo.push({
+                id: parseInt(Math.random() * 1000),
+                text: inputText,
+                completed: false,
+                isEdit: false
+            });
+            this.setState({
+                listTodo, inputText: ""
+            });
         }
         else {
-            let todoLocal = JSON.parse(localStorage.getItem("todos"));
-            setTodos(todoLocal);
+            alert("Nội dung không được rỗng!");
         }
-    };
-    useEffect(() => {
-        saveLocalTodos();
-    }, [saveLocalTodos]);
-    
-    //
-    return (
-        <div className="App">
-            <header>
-                <h1>Todo List</h1>
-            </header>
-            <Form
-                inputText={inputText}
-                todos={todos}
-                setTodos={setTodos}
-                setInputText={setInputText}
-                setStatus={setStatus}
-                filteredTodos={filteredTodos}
-            />
-            <TodoList
-                setTodos={setTodos}
-                todos={todos}
-                filteredTodos={filteredTodos}
-            />
-        </div>
-    )
+    }
+
+    completeTodo(id) {
+        let { listTodo } = this.state;
+        for (let i = 0; i < listTodo.length; i++) {
+            const todo = listTodo[i];
+            if (todo.id === id) {
+                todo.completed = !todo.completed;
+            }
+        }
+        this.setState({ listTodo })
+    }
+
+    inputChange(e) {
+        this.setState({
+            inputText: e.target.value
+        });
+    }
+
+    deleteHandler(id) {
+        let { listTodo } = this.state;
+        listTodo = listTodo.filter(item => item.id !== id);
+        this.setState({ listTodo });
+    }
+
+    editHandler(id, isEdit) {
+        let { listTodo } = this.state;
+        for (let i = 0; i < listTodo.length; i++) {
+            const todo = listTodo[i];
+            if (todo.id === id) {
+                listTodo[i].isEdit = !isEdit;
+                break;
+            }
+        }
+        this.setState({ listTodo });
+    }
+    editInputHandler(id, value) {
+        let { listTodo } = this.state;
+        for (let i = 0; i < listTodo.length; i++) {
+            const todo = listTodo[i];
+            if (todo.id === id) {
+                listTodo[i].text = value;
+                break;
+            }
+        }
+        this.setState({ listTodo });
+    }
+    cancelEditHandler(id) {
+        
+    }
+
+    render() {
+        const { inputText, listTodo } = this.state;
+        return <React.Fragment>
+            <div className="panel">
+                <input onChange={this.inputChange} type="text" className="add-todo" placeholder="Hôm nay bạn có task gì?" value={inputText} />
+                <button onClick={this.handlerSubmit}>Thêm</button>
+                <TodoList
+                    listTodo={listTodo}
+                    completeTodo={this.completeTodo}
+                    deleteHandler={this.deleteHandler}
+                    editHandler={this.editHandler}
+                    editInputHandler={this.editInputHandler}
+                    cancelEditHandler={this.cancelEditHandler}
+                />
+            </div>
+        </React.Fragment>;
+    }
 }
+
 export default App;
-// eslint-disable-next-line
