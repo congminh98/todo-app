@@ -11,12 +11,12 @@ function App() {
         {
             id: 1,
             text: "Tạo git",
-            completed: true,
+            completed: false,
             status: false,
         }, {
             id: 2,
             text: "Upload source lên git",
-            completed: true,
+            completed: false,
             status: false,
         }, {
             id: 3,

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import TodoList from './Todolistv2';
+import TodoList from './components/Todolistv2';
 import './assets/style.css';
 
 class App extends React.Component {
